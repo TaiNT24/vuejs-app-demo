@@ -15,27 +15,6 @@ const store = new Vuex.Store({
     playerAtt: 0,
     monsterAtt: 0
   },
-  mutations: {
-    attackFunc(state, kindOf) {
-      if (kindOf === 0) {
-        kindOf = state.attackMonster;
-      } else {
-        kindOf = state.strongAttackMonster;
-      }
-      state.randomNum = Math.random();
-      let monsterAt = state.monsterAttack * state.randomNum;
-      let playerAt = kindOf * state.randomNum;
-
-      state.playerAtt = playerAt;
-      state.monsterAtt = monsterAt;
-
-      state.playerHealth -= monsterAt;
-      state.monsterHealth -= playerAt;
-
-      state.playerHealth = Math.round(state.playerHealth);
-      state.monsterHealth = Math.round(state.monsterHealth);
-    },
-  },
   getters: {
     getPlayerHealth(state) {
       return state.playerHealth;
@@ -51,20 +30,39 @@ const store = new Vuex.Store({
     }
   },
   actions: {
-    attackMonster({ commit }) {
+    attackFunc(context, kindOf) {
+      if (kindOf === 0) {
+        kindOf = context.state.attackMonster;
+      } else {
+        kindOf = context.state.strongAttackMonster;
+      }
+      context.state.randomNum = Math.random();
+      let monsterAt = context.state.monsterAttack * context.state.randomNum;
+      let playerAt = kindOf * context.state.randomNum;
+
+      context.state.playerAtt = playerAt;
+      context.state.monsterAtt = monsterAt;
+
+      context.state.playerHealth -= monsterAt;
+      context.state.monsterHealth -= playerAt;
+
+      context.state.playerHealth = Math.round(context.state.playerHealth);
+      context.state.monsterHealth = Math.round(context.state.monsterHealth);
+    },
+    attackMonster(context) {
       // eslint-disable-next-line no-unused-vars
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          commit("attackFunc", 0);
+          context.dispatch("attackFunc", 0);
           resolve();
         }, 100);
       });
     },
-    strongAttack({ commit }) {
+    strongAttack(context) {
       // eslint-disable-next-line no-unused-vars
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          commit("attackFunc", 1);
+          context.dispatch("attackFunc", 1);
           resolve();
         }, 200);
       });

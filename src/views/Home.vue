@@ -22,12 +22,13 @@
       </el-col>
 
       <el-col :span="24" v-if="!gameIsRunning">
-        <el-button type="primary" @click="gameIsRunning = !gameIsRunning"
-          >Start the game</el-button
-        >
+        <el-button :type="labelButtonSuccess.type" 
+                  @click="labelButtonSuccess.action">
+          {{labelButtonSuccess.label}}
+        </el-button>
       </el-col>
 
-      <el-row v-else>
+      <!-- <el-row v-else>
         <el-col :span="24">
           <el-button type="warning" @click="attack">Attack</el-button>
         </el-col>
@@ -41,6 +42,14 @@
         </el-col>
         <el-col :span="24">
           <el-button type="success" @click="restart">Give up</el-button>
+        </el-col>
+      </el-row> -->
+
+      <el-row v-else>
+        <el-col :span="24" v-for="(buttonX, index) in labelButton" :key="index">
+          <el-button @click="buttonX.action" :type="buttonX.type">
+            {{buttonX.label}}
+          </el-button>
         </el-col>
       </el-row>
     </el-row>
@@ -67,7 +76,35 @@ export default {
       attackValue: 10,
       strongAttackValue: 15,
       playerStatus: "success",
-      monsterStatus: "success"
+      monsterStatus: "success",
+      labelButtonSuccess:{
+          label: 'Start the game',
+          action: this.start,
+          type: 'primary'
+      },
+      labelButton: [
+        {
+          label: 'Attack',
+          action: this.attack,
+          type: 'warning'
+        },
+        {
+          label: 'Strong Attack',
+          action: this.strongAttack,
+          type: 'danger'
+
+        },
+        {
+          label: 'Heal',
+          action: this.heal,
+          type: 'primary'
+        },
+        {
+          label: 'Give up',
+          action: this.restart,
+          type: 'success'
+        }
+      ]
     };
   },
   computed: {
@@ -75,8 +112,8 @@ export default {
     ...mapGetters({
       // map `this.doneCount` to `this.$store.getters.getPlayerHealth`
       playerHealth: "getPlayerHealth",
-      monsterHealth: "getMonsterHealth"
-    })
+      monsterHealth: "getMonsterHealth",
+    }),
   },
   watch: {
     playerHealth() {
@@ -112,7 +149,11 @@ export default {
         player: "Player attack: " + this.getPlayerAtt(),
         monster: "Monster attack: " + this.getMonsterAtt()
       };
-      this.logMsg.push(msg);
+      // this.logMsg.push(msg);
+      this.logMsg.unshift(msg);
+    },
+    start: function(){
+      this.gameIsRunning = true;
     },
     restart: function() {
       this.gameIsRunning = false;
@@ -124,29 +165,27 @@ export default {
       this.logMsg = [];
     },
     attack: function() {
-      // eslint-disable-next-line prettier/prettier
-      // eslint-disable-next-line no-unused-vars
-      new Promise(resolve => {
-        this.$store.dispatch("attackMonster");
-        resolve();
+//       eslint-disable-next-line prettier/prettier
+//       eslint-disable-next-line no-unused-vars
+      new Promise((resolve, reject) => {
+        resolve()
+      }).then(() => {
+        return this.$store.dispatch("attackMonster");
       }).then(() => {
         this.end();
       });
 
-      console.log(this.playerHealth);
-      console.log(this.playerStatus);
     },
     strongAttack: function() {
-      this.$store.dispatch("strongAttack");
-      let msg = {
-        player: "Player attack: " + this.getPlayerAtt,
-        monster: "Monster attack: " + this.getMonsterAtt
-      };
+      // eslint-disable-next-line no-unused-vars
+      new Promise((resolve, reject) => {
+        resolve()
+      }).then(() => {
+        return this.$store.dispatch("strongAttack");
+      }).then(() => {
+        this.end();
+      });
 
-      this.logMsg.push(msg);
-
-      console.log(this.playerHealth);
-      console.log(this.playerStatus);
     },
     heal: function() {
       this.healX();
@@ -162,6 +201,6 @@ export default {
   width: 50vh;
   margin: 1.5vh;
 }
-#logMsg {
-}
+/* #logMsg {
+} */
 </style>
